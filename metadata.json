@@ -1,0 +1,6 @@
+{
+  "name": "BVM Test Portal",
+  "description": "School examination and online testing platform for Class 1 to 12 with Teacher and Student portals.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
