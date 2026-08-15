@@ -1,7 +1,7 @@
 import React from 'react';
 import { User } from '../types';
 import { LogOut, ShieldCheck, UserCheck } from 'lucide-react';
-import bvmLogo from '../assets/images/bvm_school_logo_1786447134638.jpg';
+import bvmLogo from '../assets/images/bvm_school_logo_1786799736979.jpg';
 
 interface NavbarProps {
   user: User | null;

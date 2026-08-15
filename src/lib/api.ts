@@ -76,12 +76,31 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     try {
       data = JSON.parse(responseText);
     } catch (e) {
-      data = { message: responseText };
+      // If server returned an HTML error page (like 403 Forbidden or 502)
+      if (responseText.includes('<html') || responseText.includes('<!DOCTYPE')) {
+        if (response.status === 403 || response.status === 401) {
+          data = { error: 'Your session has expired or authorization was lost. Please log in again.' };
+        } else {
+          data = { error: `Server error (${response.status}). Please try again.` };
+        }
+      } else {
+        data = { message: responseText };
+      }
     }
   }
 
   if (!response.ok) {
-    throw new Error(data?.error || data?.message || 'An error occurred while processing request');
+    if (response.status === 401 || response.status === 403) {
+      clearStoredAuth();
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('bvm:session-expired', {
+            detail: { message: data?.error || 'Session expired. Please log in again.' },
+          })
+        );
+      }
+    }
+    throw new Error(data?.error || data?.message || `Request failed with status ${response.status}`);
   }
 
   return data as T;

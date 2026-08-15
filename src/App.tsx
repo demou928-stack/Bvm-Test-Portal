@@ -31,11 +31,16 @@ export default function App() {
   const [viewingResultId, setViewingResultId] = useState<string | null>(null);
 
   useEffect(() => {
-    // If logged in role doesn't match active portal, allow switching
-    if (user && user.role !== activePortal) {
-      // User is viewing another portal tab
-    }
-  }, [user, activePortal]);
+    const handleSessionExpired = (e: any) => {
+      setUser(null);
+      clearStoredAuth();
+    };
+
+    window.addEventListener('bvm:session-expired', handleSessionExpired);
+    return () => {
+      window.removeEventListener('bvm:session-expired', handleSessionExpired);
+    };
+  }, []);
 
   const handleLoginSuccess = (userOrToken: any, loggedInUser?: User) => {
     let userToSet: User | null = null;

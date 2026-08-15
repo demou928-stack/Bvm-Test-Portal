@@ -269,18 +269,20 @@ initDatabase();
 function authenticateToken(req: any, res: any, next: any) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Access token required' });
+  if (!token) return res.status(401).json({ error: 'Access token required. Please log in again.' });
 
   jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
-    if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+    if (err) {
+      return res.status(401).json({ error: 'Session expired or invalid. Please log in again.' });
+    }
     req.user = user;
     next();
   });
 }
 
 function requireTeacher(req: any, res: any, next: any) {
-  if (req.user?.role !== 'teacher') {
-    return res.status(403).json({ error: 'Teacher authorization required' });
+  if (!req.user || req.user.role !== 'teacher') {
+    return res.status(401).json({ error: 'Teacher authorization required. Please log in with your teacher credentials.' });
   }
   next();
 }
